@@ -265,6 +265,7 @@ server_recv_cb(EV_P_ ev_io *w, int revents)
         return;
     }
 
+#if 0
     int err = crypto->encrypt(remote->buf, server->e_ctx, BUF_SIZE);
 
     if (err) {
@@ -273,6 +274,7 @@ server_recv_cb(EV_P_ ev_io *w, int revents)
         close_and_free_server(EV_A_ server);
         return;
     }
+#endif
 
     int s = send(remote->fd, remote->buf->data, remote->buf->len, 0);
 
@@ -407,7 +409,8 @@ remote_recv_cb(EV_P_ ev_io *w, int revents)
     }
 
     server->buf->len = r;
-
+    
+#if 0
     int err = crypto->decrypt(server->buf, server->d_ctx, BUF_SIZE);
     if (err == CRYPTO_ERROR) {
         LOGE("invalid password or cipher");
@@ -417,6 +420,7 @@ remote_recv_cb(EV_P_ ev_io *w, int revents)
     } else if (err == CRYPTO_NEED_MORE) {
         return; // Wait for more
     }
+#endif
 
     int s = send(server->fd, server->buf->data, server->buf->len, 0);
 
