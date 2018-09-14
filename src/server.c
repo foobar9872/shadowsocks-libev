@@ -753,6 +753,8 @@ server_recv_cb(EV_P_ ev_io *w, int revents)
     tx      += r;
     buf->len = r;
 
+#if 0
+    /* 解密 */
     int err = crypto->decrypt(buf, server->d_ctx, BUF_SIZE);
 
     if (err == CRYPTO_ERROR) {
@@ -770,6 +772,7 @@ server_recv_cb(EV_P_ ev_io *w, int revents)
         server->frag++;
         return;
     }
+#endif
 
     // handshake and transmit data
     if (server->stage == STAGE_STREAM) {
@@ -1165,6 +1168,8 @@ remote_recv_cb(EV_P_ ev_io *w, int revents)
     rx += r;
 
     server->buf->len = r;
+    /* 加密 */
+#if 0
     int err = crypto->encrypt(server->buf, server->e_ctx, BUF_SIZE);
 
     if (err) {
@@ -1173,7 +1178,8 @@ remote_recv_cb(EV_P_ ev_io *w, int revents)
         close_and_free_server(EV_A_ server);
         return;
     }
-
+#endif
+    
 #ifdef USE_NFCONNTRACK_TOS
     setTosFromConnmark(remote, server);
 #endif
